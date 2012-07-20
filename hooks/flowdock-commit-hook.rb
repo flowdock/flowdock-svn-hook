@@ -5,6 +5,11 @@ REPOSITORY_NAME = nil
 REPOSITORY_URL = "https://svn.example.com/repository/trunk"
 REVISION_URL = "https://svn.example.com/repository/trunk?p=:revision"
 
+EMAILS = {
+  # in form of:
+  # '<svn username>' => 'user@email.address',
+}
+
 ##############################
 ### DO NOT EDIT BELOW THIS ###
 ##############################
@@ -22,7 +27,11 @@ class Revision
     @repository_name = REPOSITORY_NAME || repository_path.split('/').last
     @repository = Svn::Repo.open(repository_path)
     @revision = @repository.revision(rev)
-    @changes = []
+    @changes = {
+      'added' => [],
+      'removed' => [],
+      'modified' => []
+    }
     process_changes!
   end
 
@@ -34,7 +43,10 @@ class Revision
       },
       'revision' => @revision.to_s,
       'revision_url' => REVISION_URL,
-      'author' => @revision.author,
+      'author' => {
+        'name' => @revision.author,
+        'email' => EMAILS[@revision.author]
+      },
       'message' => @revision.message,
       'time' => @revision.timestamp.to_i,
       'branch' => @branch,
@@ -51,8 +63,8 @@ class Revision
 
       set_branch_and_action!(path, match, change)
 
-      @changes << {
-        'action' => change.change_kind.to_s,
+      change_kind = change.change_kind.to_s == 'deleted' && 'removed' || change.change_kind.to_s
+      @changes[change_kind] << {
         'file_type' => change.node_kind.to_s,
         'path' => (match && match[3] || path)
       }

@@ -63,7 +63,9 @@ class Revision
 
       set_branch_and_action!(path, match, change)
 
-      change_kind = change.change_kind.to_s == 'deleted' && 'removed' || change.change_kind.to_s
+      change_kind = change.change_kind.to_s
+      change_kind = 'removed' if change_kind == 'deleted'
+
       @changes[change_kind] << {
         'file_type' => change.node_kind.to_s,
         'path' => (match && match[3] || path)
@@ -83,8 +85,6 @@ class Revision
       else
         'commit'
       end
-    else
-      @branch = path
     end
     @action ||= 'commit'
   end

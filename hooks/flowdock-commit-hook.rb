@@ -1,17 +1,26 @@
-#!/usr/bin/ruby
+# Copyright (c) 2012 Flowdock Ltd, http://www.flowdock.com/
+
+#############################
+### CONFIG SECTION STARTS ###
+#############################
 
 FLOWDOCK_TOKEN = ""
 REPOSITORY_NAME = nil
-REPOSITORY_URL = "https://svn.example.com/repository/trunk"
-REVISION_URL = "https://svn.example.com/repository/trunk?p=:revision"
+REPOSITORY_URL = nil # "https://svn.example.com/repository/trunk"
+REVISION_URL = nil # "https://svn.example.com/repository/trunk?p=:revision"
 
 USERS = {
   # '<svn username>' => { 'name' => 'John Doe', 'email' => 'user@email.address' },
 }
 
-##############################
-### DO NOT EDIT BELOW THIS ###
-##############################
+###########################
+### CONFIG SECTION ENDS ###
+###########################
+
+if FLOWDOCK_TOKEN.nil? || !FLOWDOCK_TOKEN.match(/^[a-z0-9]+$/)
+  puts "Flowdock token missing or invalid"
+  exit 1
+end
 
 REPOSITORY_PATH = ARGV[0]
 REVISION = ARGV[1].to_i
@@ -92,12 +101,7 @@ request = Net::HTTP::Post.new("/svn/#{FLOWDOCK_TOKEN}")
 request.body = MultiJson.encode({ :payload => revision.to_hash })
 request.content_type = 'application/json'
 
-flowdock_api_domain = ENV['FLOWDOCK_API_DOMAIN'] || 'api.flowdock.com'
-flowdock_port = ENV['FLOWDOCK_PORT'] || 443
-
-http = Net::HTTP.new(flowdock_api_domain, flowdock_port)
-if flowdock_port == 443
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-end
+http = Net::HTTP.new('api.flowdock.com', 443)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 response = http.request(request)

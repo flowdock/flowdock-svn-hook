@@ -5,9 +5,8 @@ REPOSITORY_NAME = nil
 REPOSITORY_URL = "https://svn.example.com/repository/trunk"
 REVISION_URL = "https://svn.example.com/repository/trunk?p=:revision"
 
-EMAILS = {
-  # in form of:
-  # '<svn username>' => 'user@email.address',
+USERS = {
+  # '<svn username>' => { 'name' => 'John Doe', 'email' => 'user@email.address' },
 }
 
 ##############################
@@ -43,10 +42,7 @@ class Revision
       },
       'revision' => @revision.to_s,
       'revision_url' => REVISION_URL,
-      'author' => {
-        'name' => @revision.author,
-        'email' => EMAILS[@revision.author]
-      },
+      'author' => USERS[@revision.author] || { 'name' => @revision.author },
       'message' => @revision.message,
       'time' => @revision.timestamp.to_i,
       'branch' => @branch,

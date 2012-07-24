@@ -84,9 +84,9 @@ class Revision
     elsif change.node_kind == :dir && path.start_with?('/branches/')
       @branch = match[2]
       @action = if change.change_kind == :added
-        'branch create'
+        'branch_create'
       elsif change.change_kind == :deleted
-        'branch delete'
+        'branch_delete'
       else
         'commit'
       end

@@ -26,7 +26,7 @@ REPOSITORY_PATH = ARGV[0]
 REVISION = ARGV[1].to_i
 
 require 'rubygems'
-require 'net/http'
+require 'net/https'
 require 'svn'
 require 'multi_json'
 

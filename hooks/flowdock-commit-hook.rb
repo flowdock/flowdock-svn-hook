@@ -8,7 +8,7 @@ FLOWDOCK_TOKEN = ""
 REPOSITORY_NAME = nil
 REPOSITORY_URL = nil # "https://svn.example.com/repository/trunk"
 REVISION_URL = nil # "https://svn.example.com/repository/trunk?p=:revision"
-
+VERIFY_SSL = true
 USERS = {
   # '<svn username>' => { 'name' => 'John Doe', 'email' => 'user@email.address' },
 }
@@ -64,7 +64,7 @@ class Revision
 
   def process_changes!
     @revision.changes.each_pair do |path, change|
-      match = path.match(/^\/(?:(trunk)|branches\/(\w+))(?:\/(.*))?/)
+      match = path.match(/^\/(?:(trunk)|branches\/(\w+))(?:\/(.*))?/) || [nil]
 
       set_branch_and_action!(path, match, change)
 
@@ -103,5 +103,9 @@ request.content_type = 'application/json'
 
 http = Net::HTTP.new('api.flowdock.com', 443)
 http.use_ssl = true
-http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+http.verify_mode = if VERIFY_SSL
+  OpenSSL::SSL::VERIFY_PEER
+else
+  OpenSSL::SSL::VERIFY_NONE
+end
 response = http.request(request)

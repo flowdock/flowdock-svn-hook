@@ -12,6 +12,10 @@ VERIFY_SSL = true
 USERS = {
   # '<svn username>' => { 'name' => 'John Doe', 'email' => 'user@email.address' },
 }
+TAGS = [
+  # "tag1",
+  # "tag2"
+]
 
 ###########################
 ### CONFIG SECTION ENDS ###
@@ -97,7 +101,13 @@ end
 
 revision = Revision.new(REPOSITORY_PATH, REVISION)
 
-request = Net::HTTP::Post.new("/svn/#{FLOWDOCK_TOKEN}")
+tags = if TAGS.empty?
+  ""
+else
+  "+" + TAGS.join('+').tr('#','')
+end
+
+request = Net::HTTP::Post.new("/svn/#{FLOWDOCK_TOKEN}#{tags}")
 request.body = MultiJson.encode({ :payload => revision.to_hash })
 request.content_type = 'application/json'
 

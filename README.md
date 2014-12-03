@@ -74,6 +74,12 @@ Change the configuration variables in the beginning of the file:
   Map your Subversion usernames to real names and email addresses.
   Flowdock uses these to enrich your Team Inbox events' default content.
 
+* TAGS (optional)
+
+  Specify a set of tags to be added to each team inbox message from this 
+  repository. Should be entered as an array of strings. No # character is 
+  necessary for the tags.
+
 * VERIFY_SSL (optional)
 
   Set this to false if you do not care that some third party might get

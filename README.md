@@ -1,7 +1,7 @@
 flowdock-svn-hook
 =================
 
-Subversion hook sending events to Flowdock
+Subversion hook that sends events to Flowdock
 
 If you already know about Ruby and Subversion commit hooks,
 [flowdock-commit-hook.rb](https://github.com/flowdock/flowdock-svn-hook/raw/master/hooks/flowdock-commit-hook.rb)
@@ -9,8 +9,7 @@ is what you are looking for.
 
 ### Requirements
 
-This list of software needs to be available for the user you use to host
-the repository.
+This software needs to be available for the user that hosts the repository.
 
 * ruby - _1.8.7 and 1.9.x are supported_
 
@@ -25,7 +24,7 @@ the repository.
 
   TL;DR; Currently:
 
-        wget http://production.cf.rubygems.org/rubygems/rubygems-1.8.24.zip
+        wget http://production.cf.rubygems.org/rubygems/rubygems-2.4.5.zip
         unzip rubygems-1.8.24.zip
         cd rubygems-1.8.24
         ruby setup.rb
@@ -34,45 +33,44 @@ the repository.
 
         gem install svn multi_json --no-ri --no-rdoc
 
-  NOTE: Current version of svn gem (0.2.0) is broken on MacOSX, you need to
-  install the gem manually from Github source.
+  NOTE: The current version of the svn gem (0.2.0) is broken on Mac OS X. You need to
+  install the gem manually from Github sources.
 
 ### Install
 
-Find out where your repository is located in the filesystem. We'll refer it's
+Find out where your repository is located in the filesystem. We'll refer to its
 `hooks` subdirectory as HOOKS_DIR later on.
 
 Copy [flowdock-commit-hook.rb](https://github.com/flowdock/flowdock-svn-hook/raw/master/hooks/flowdock-commit-hook.rb)
 to your HOOKS_DIR.
 
-Change the configuration variables in the beginning of the file:
+Change the configuration variables at the top of the flowdock-commit-hook.rb file:
 
 * FLOWDOCK_TOKEN (mandatory)
 
-  Log in and pick your flow token from [https://www.flowdock.com/account/tokens](https://www.flowdock.com/account/tokens)
-  under "Flow API tokens".
+  Log in to Flowdock and pick your flow token from [https://www.flowdock.com/account/tokens](https://www.flowdock.com/account/tokens), under "Flow API tokens".
 
 * REPOSITORY_NAME (optional)
 
-  Used in Team Inbox as a source name. If it's nil, then the directory name of
+  Used in the team inbox as a source name. If it's nil, then the directory name of
   the repository is used (`/var/www/repos/foo` will show up as `foo`).
 
 * REPOSITORY_URL (optional)
 
-  Used in Team Inbox as a link to project source.
+  Used in the team inbox as a link to the project source.
   Eg. `https://svn.example.com/repository/trunk`
 
 * REVISION_URL (optional)
 
-  Used in Team Inbox message as a link to a specific revision. A string
-  `:revision` is replaced with the revision number. Eg.
+  Used in team inbox messages as a link to a specific revision. The string
+  `:revision` is replaced with the revision number. E.g.
   `http://svn.example.com/repo/trunk?p=:revision` with r1234 becomes a link to
-  `http://svn.example.com/repo/trunk?p=1234` in Flowdock Team Inbox.
+  `http://svn.example.com/repo/trunk?p=1234` in Flowdock team inbox.
 
 * USERS (optional)
 
   Map your Subversion usernames to real names and email addresses.
-  Flowdock uses these to enrich your Team Inbox events' default content.
+  Flowdock uses these to enrich your team inbox messages' default content.
 
 * TAGS (optional)
 
@@ -83,7 +81,7 @@ Change the configuration variables in the beginning of the file:
 * VERIFY_SSL (optional)
 
   Set this to false if you do not care that some third party might get
-  hold of your flowdock api token
+  ahold of your Flowdock API token.
 
 In case you don't yet have post commit scripts, you have to create the invoking
 script:
@@ -104,4 +102,4 @@ where 'ruby' is an absolute path to your installed ruby interpreter.
 To get the most out of the Flowdock post commit hook, we encourage you to
 follow [SVN best practices](http://blog.evanweaver.com/2007/08/15/svn-branching-best-practices-in-practice/).
 
-By the way, there is also a [Git](http://git-scm.org) SCM tool.
+By the way, there is also another SCM tool, [Git](http://git-scm.org).

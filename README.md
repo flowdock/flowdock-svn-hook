@@ -33,7 +33,8 @@ This software needs to be available for the user that hosts the repository.
 
         gem install svn multi_json --no-ri --no-rdoc
 
-  NOTE: The current version of the svn gem (0.2.0) is broken on Mac OS X. You need to
+  NOTE: The current version of the svn gem (0.2.0) is broken on some operating
+  systems including Mac OS X and RedHat Enterprise Linux/CentOS. You need to
   install the gem manually from Github sources.
 
 ### Install

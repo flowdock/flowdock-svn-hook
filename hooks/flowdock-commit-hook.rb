@@ -56,7 +56,7 @@ class Revision
       'revision' => @revision.to_s,
       'revision_url' => REVISION_URL,
       'author' => USERS[@revision.author] || { 'name' => @revision.author },
-      'message' => @revision.message,
+      'message' => @revision.message.force_encoding("utf-8"),
       'time' => @revision.timestamp.to_i,
       'branch' => @branch,
       'action' => @action,

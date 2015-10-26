@@ -70,10 +70,6 @@ class Revision
     USERS[@revision.author] || { name: @revision.author }
   end
 
-  def random_id
-    (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-  end
-
   def title
     if revision_url
       "<a href='#{revision_url}'>#{@revision}</a> #{@revision.message}"

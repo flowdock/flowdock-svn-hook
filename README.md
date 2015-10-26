@@ -49,7 +49,7 @@ Change the configuration variables at the top of the flowdock-commit-hook.rb fil
 
 * FLOW_TOKEN (mandatory)
 
-  Log in to Flowdock and create a source by clicking on the cog wheel next to the current flow's name in the sidebar. Choose Inbox settings, find Git from the list and click Add new. The token will be shown there.
+  Log in to Flowdock and create a source by clicking on the cog wheel next to the current flow's name in the sidebar. Choose Integrations, find Subversion from the list and click Add new. The token can be created there.
 
 * REPOSITORY_NAME (optional)
 

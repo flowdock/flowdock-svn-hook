@@ -1,16 +1,16 @@
-# Copyright (c) 2012 Flowdock Ltd, http://www.flowdock.com/
+# Copyright (c) 2015 Flowdock Ltd, http://www.flowdock.com/
 
 #############################
 ### CONFIG SECTION STARTS ###
 #############################
 
-FLOWDOCK_TOKEN = ""
+FLOW_TOKEN = '' # REQUIRED
 REPOSITORY_NAME = nil
 REPOSITORY_URL = nil # "https://svn.example.com/repository/trunk"
 REVISION_URL = nil # "https://svn.example.com/repository/trunk?p=:revision"
 VERIFY_SSL = true
 USERS = {
-  # '<svn username>' => { 'name' => 'John Doe', 'email' => 'user@email.address' },
+  # '<svn username>' => { name: 'John Doe', email: 'user@email.address', avatar: 'avatar_url' },
 }
 TAGS = [
   # "tag1",
@@ -21,8 +21,8 @@ TAGS = [
 ### CONFIG SECTION ENDS ###
 ###########################
 
-if FLOWDOCK_TOKEN.nil? || !FLOWDOCK_TOKEN.match(/^[a-z0-9]+$/)
-  puts "Flowdock token missing or invalid"
+if FLOW_TOKEN.nil? || !FLOW_TOKEN.match(/^[a-z0-9]+$/)
+  puts 'Flowdock token missing or invalid'
   exit 1
 end
 
@@ -49,22 +49,61 @@ class Revision
 
   def to_hash
     {
-      'repository' => {
-        'name' => @repository_name,
-        'url' => REPOSITORY_URL
+      event: 'activity',
+      author: author,
+      external_thread_id: "#{@repository_name}:#{@revision}",
+      thread: {
+        external_url: REPOSITORY_URL,
+        title: thread_title,
+        fields: [
+          { label: 'Repository', value: @repository_name }
+        ]
       },
-      'revision' => @revision.to_s,
-      'revision_url' => REVISION_URL,
-      'author' => USERS[@revision.author] || { 'name' => @revision.author },
-      'message' => @revision.message,
-      'time' => @revision.timestamp.to_i,
-      'branch' => @branch,
-      'action' => @action,
-      'changes' => @changes
+      title: title,
+      tags: TAGS
     }
   end
 
   private
+
+  def author
+    USERS[@revision.author] || { name: @revision.author }
+  end
+
+  def title
+    if revision_url
+      "<a href='#{revision_url}'>#{@revision}</a> #{@revision.message}"
+    else
+      "#{@revision} #{@revision.message}"
+    end
+  end
+
+  def revision_url
+    if REVISION_URL
+      REVISION_URL.gsub(':revision', @revision.to_s.match(/(?<rev>\d+)/)[:rev])
+    end
+  end
+
+  def thread_title
+    case @action
+    when 'branch_delete'
+      "Deleted branch #{branch}"
+    when 'branch_create'
+      "Created branch #{branch}"
+    when 'commit'
+      "Updated branch #{branch} with a commit"
+    else
+      fail 'Unsupported event'
+    end
+  end
+
+  def branch
+    if @branch.nil? || branch.empty?
+      'trunk' # default branch name
+    else
+      content['branch']
+    end
+  end
 
   def process_changes!
     @revision.changes.each_pair do |path, change|
@@ -87,13 +126,14 @@ class Revision
       @branch = match[1..2].compact.first
     elsif change.node_kind == :dir && path.start_with?('/branches/')
       @branch = match[2]
-      @action = if change.change_kind == :added
-        'branch_create'
-      elsif change.change_kind == :deleted
-        'branch_delete'
-      else
-        'commit'
-      end
+      @action =
+        if change.change_kind == :added
+          'branch_create'
+        elsif change.change_kind == :deleted
+          'branch_delete'
+        else
+          'commit'
+        end
     end
     @action ||= 'commit'
   end
@@ -101,21 +141,17 @@ end
 
 revision = Revision.new(REPOSITORY_PATH, REVISION)
 
-tags = if TAGS.empty?
-  ""
-else
-  "+" + TAGS.join('+').tr('#','')
-end
-
-request = Net::HTTP::Post.new("/svn/#{FLOWDOCK_TOKEN}#{tags}")
-request.body = MultiJson.encode({ :payload => revision.to_hash })
+request = Net::HTTP::Post.new("/messages?flow_token=#{FLOW_TOKEN}")
+request.body = MultiJson.encode(revision.to_hash)
 request.content_type = 'application/json'
 
 http = Net::HTTP.new('api.flowdock.com', 443)
 http.use_ssl = true
-http.verify_mode = if VERIFY_SSL
-  OpenSSL::SSL::VERIFY_PEER
-else
-  OpenSSL::SSL::VERIFY_NONE
-end
-response = http.request(request)
+http.verify_mode =
+  if VERIFY_SSL
+    OpenSSL::SSL::VERIFY_PEER
+  else
+    OpenSSL::SSL::VERIFY_NONE
+  end
+
+http.request(request)

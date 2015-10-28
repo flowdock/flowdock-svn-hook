@@ -47,9 +47,9 @@ to your HOOKS_DIR.
 
 Change the configuration variables at the top of the flowdock-commit-hook.rb file:
 
-* FLOWDOCK_TOKEN (mandatory)
+* FLOW_TOKEN (mandatory)
 
-  Log in to Flowdock and pick your flow token from [https://www.flowdock.com/account/tokens](https://www.flowdock.com/account/tokens), under "Flow API tokens".
+  Log in to Flowdock and create a source by clicking on the cog wheel next to the current flow's name in the sidebar. Choose Integrations, find Subversion from the list and click Add new. The token can be created there.
 
 * REPOSITORY_NAME (optional)
 
@@ -82,7 +82,7 @@ Change the configuration variables at the top of the flowdock-commit-hook.rb fil
 * VERIFY_SSL (optional)
 
   Set this to false if you do not care that some third party might get
-  ahold of your Flowdock API token.
+  ahold of your flow token.
 
 In case you don't yet have post commit scripts, you have to create the invoking
 script:
